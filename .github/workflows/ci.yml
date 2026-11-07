@@ -1,0 +1,50 @@
+name: CI
+
+# Runs the Pest unit suite on every pull request and on pushes to master. The shared
+# code-quality chain (Pint, Rector, PHPStan and the rest) is a separate ticket and is not wired here.
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  pest:
+    name: Pest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Pest
+        run: composer test
+
+  # The supported floor is PHP 8.2 while the suite runs on 8.4: parse every shipped PHP file on 8.2
+  # so syntax newer than the floor fails here. tests/, vendor/ and the synced agent folders are not shipped.
+  lint-floor:
+    name: Floor lint (PHP 8.2)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+      - name: Parse every shipped PHP file
+        run: |
+          count=0
+          while IFS= read -r file; do
+            php -l "$file"
+            count=$((count + 1))
+          done < <(git ls-files '*.php' ':!:tests/**' ':!:vendor/**' ':!:.claude/**' ':!:.agents/**' ':!:.cursor/**')
+          echo "Linted $count file(s)"
+          test "$count" -gt 0
