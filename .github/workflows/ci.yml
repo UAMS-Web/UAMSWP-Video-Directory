@@ -1,0 +1,28 @@
+name: CI
+
+# Runs the Pest unit suite on every pull request and on pushes to master. The shared
+# code-quality chain (Pint, Rector, PHPStan and the rest) is a separate ticket and is not wired here.
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  pest:
+    name: Pest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Pest
+        run: composer test
