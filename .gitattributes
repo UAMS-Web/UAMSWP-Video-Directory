@@ -1,0 +1,6 @@
+/* export-ignore
+/.* export-ignore
+/uamswp-video-directory.php -export-ignore
+/includes -export-ignore
+/css -export-ignore
+/templates -export-ignore
