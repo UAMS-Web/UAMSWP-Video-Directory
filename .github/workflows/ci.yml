@@ -26,3 +26,25 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Pest
         run: composer test
+
+  # The supported floor is PHP 8.2 while the suite runs on 8.4: parse every shipped PHP file on 8.2
+  # so syntax newer than the floor fails here. tests/, vendor/ and the synced agent folders are not shipped.
+  lint-floor:
+    name: Floor lint (PHP 8.2)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+      - name: Parse every shipped PHP file
+        run: |
+          count=0
+          while IFS= read -r file; do
+            php -l "$file"
+            count=$((count + 1))
+          done < <(git ls-files '*.php' ':!:tests/**' ':!:vendor/**' ':!:.claude/**' ':!:.agents/**' ':!:.cursor/**')
+          echo "Linted $count file(s)"
+          test "$count" -gt 0
