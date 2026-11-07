@@ -1,2 +1,5 @@
 *.swp
 *.swo
+/vendor/
+/.phpunit.cache/
+junit.xml
