@@ -1,7 +1,14 @@
 name: CI
 
-# Runs the Pest unit suite on every pull request and on pushes to master. The shared
-# code-quality chain (Pint, Rector, PHPStan and the rest) is a separate ticket and is not wired here.
+# Runs the Pest unit suite, the PHP 8.2 floor lint, the download archive check and the
+# aggregate-needs check on every pull request and on pushes to master. The shared code-quality
+# chain (Pint, Rector, PHPStan and the rest) is a separate ticket and is not wired here.
+#
+# The last job, `CI`, is the one check a ruleset requires from this workflow (with the two
+# pull-request-body checks, `Attribution footer` and `Closing keywords`). It `needs:` every other
+# job here, runs `if: always()`, and fails unless each reports `success`: a `skipped` or
+# `cancelled` job fails it. Do not rename `CI`. A job added to this file goes into the `needs:`
+# of `CI` in the same change; the `aggregate-needs` job fails when one is missing.
 
 on:
   pull_request:
@@ -48,3 +55,54 @@ jobs:
           done < <(git ls-files '*.php' ':!:tests/**' ':!:vendor/**' ':!:.claude/**' ':!:.agents/**' ':!:.cursor/**')
           echo "Linted $count file(s)"
           test "$count" -gt 0
+
+  # Fails when a GitHub download of this repository would carry anything but what the plugin
+  # runs: the synced agent folders, AGENTS.md, docs, tests, scripts, lock files or tool
+  # configuration. It lists `git archive` of the checked-out commit with the keep-list in
+  # `.gitattributes` applied, so a new top-level folder the keep-list does not name fails the
+  # pull request that adds it. Reported here, not by a separate workflow, so `CI` waits on it.
+  download-archive:
+    name: Download archive
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check that the download holds only what the plugin runs
+        run: node .claude/skills/download-archive-check/check-download-archive.mjs
+
+  # Fails, naming the job, when a job in this file is missing from the `needs:` list of `CI`, or
+  # when one of the three fixed required names is reported by no pull request workflow.
+  aggregate-needs:
+    name: Aggregate needs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Check the aggregate covers every job
+        run: node .claude/skills/code-quality/scripts/check-aggregate-needs.mjs
+
+  # The one check a ruleset requires from this workflow. Keep `needs:` naming every other job.
+  ci:
+    name: CI
+    needs: [pest, lint-floor, download-archive, aggregate-needs]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # `skipped` and `cancelled` fail as well as `failure`: a job that did not run proved nothing.
+      - name: Every needed job succeeded
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Needed job results: $RESULTS"
+          # An empty list (an emptied `needs:`, a dropped `env:`) would run no iterations and pass having read nothing.
+          if [ -z "$RESULTS" ]; then echo "::error::No needed job results to read"; exit 1; fi
+          for result in $RESULTS; do
+            if [ "$result" != "success" ]; then
+              echo "::error::A needed job reported $result"
+              exit 1
+            fi
+          done
