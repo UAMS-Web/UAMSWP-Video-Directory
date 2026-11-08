@@ -5,8 +5,8 @@ name: CI
 # The lint and unit chain is the shared one, `UAMS-Web/uams-ci-workflows`, called by the
 # `checks` job. One definition serves every UAMS-Web repository, so this plugin does not
 # carry a copy that drifts. The call switches on the two jobs only a plugin runs
-# (`floor-lint`, `download-archive`), runs on Linux only, leaves mutation testing off, and
-# runs the plugin's unit suite as `composer test:unit`. `phpcs` stays off: this plugin has no
+# (`floor-lint`, `download-archive`), runs on Linux only, mutates the files a pull request
+# changes under `mutate-paths`, and runs the plugin's unit suite as `composer test:unit`. `phpcs` stays off: this plugin has no
 # PHPCS configuration. The chain's own header lists every input and its default.
 #
 # The last job, `CI`, is the one check a ruleset requires from this workflow (with the two
@@ -21,7 +21,7 @@ name: CI
 # What the plugin carries for the call, because the called jobs check out this repository:
 # `.github/actions/setup/action.yml`, the synced `.claude/skills` scripts (including
 # `pest-testing`, which the chain's `mutate-ignore` and `pest` jobs run), the Composer scripts
-# `test:pint`, `test:refactor`, `stan` and `test:unit`, and `scripts/lint-floor.php`.
+# `test:pint`, `test:refactor`, `stan`, `test:unit` and `mutate`, and `scripts/lint-floor.php`.
 
 on:
   pull_request:
@@ -46,9 +46,10 @@ jobs:
     uses: UAMS-Web/uams-ci-workflows/.github/workflows/ci.yml@v0.9.0
     with:
       linux-only: true
-      mutate: false
-      # Unused while `mutate` is false: since v0.9.0 that also skips the `mutate-ignore` job.
       mutate-ignore-paths: includes
+      # First-party PHP the `mutate` job selects changed files from: the plugin's classes, its
+      # templates and the main plugin file. The chain's default, `src`, does not exist here.
+      mutate-paths: includes templates uamswp-video-directory.php
       floor-lint: true
       floor-lint-php: '8.2'
       download-archive: true
