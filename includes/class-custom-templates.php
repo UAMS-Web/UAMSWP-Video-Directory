@@ -44,6 +44,7 @@ class UAMSWP_Video_Directory_Custom_Templates
     // route single- template
     public function video_single($single_template)
     {
+        /** @var WP_Post $post */
         global $post;
         $found = locate_template('single-video.php');
         // Equivalent mutants: the post type and `locate_template()`'s result are always strings,

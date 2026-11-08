@@ -23,7 +23,9 @@ it('wires the post type, taxonomy and template hooks on the first call, in that 
     foreach (['add_action' => 'action', 'add_filter' => 'filter'] as $function => $kind) {
         when($function)->alias(
             static function (string $hook, array $callback) use (&$registered, $kind): bool {
-                $registered[] = $kind.':'.$hook.':'.$callback[0]::class.'::'.$callback[1];
+                [$object, $method] = $callback;
+                assert(is_object($object) && is_string($method));
+                $registered[] = $kind.':'.$hook.':'.$object::class.'::'.$method;
 
                 return true;
             }

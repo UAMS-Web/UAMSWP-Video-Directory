@@ -27,7 +27,8 @@ it('registers the video categories taxonomy for the video post type', function (
         ->once()
         ->with('video_categories', 'video', Mockery::on(
             static fn (array $args): bool => $args['hierarchical'] === true
-                && $args['labels']['name'] === 'Video Categories'
+                && is_array($args['labels'])
+                && ($args['labels']['name'] ?? null) === 'Video Categories'
         ));
 
     (new UAMSWP_Video_Directory_Custom_Taxonomies)->init_taxonomies();
