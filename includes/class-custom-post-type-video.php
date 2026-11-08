@@ -20,21 +20,21 @@ class UAMSWP_Video_Directory_Post_Type_Video {
 	 *
 	 * @since    1.0.0
 	 */
-	public function init() {
+	public function init(): void {
 
-		add_action( 'init', array( $this, 'custom_post_types' ) );
+		add_action( 'init', [ $this, 'custom_post_types' ] );
 		//$this->add_video_caps_to_admin();
 		//$this->create_video_editor_role();
 	}
 
-	function custom_post_types() {
-		$labels = array(
+	public function custom_post_types(): void {
+		$labels = [
 			'name' => 'Videos',
 			'singular_name' => 'Video',
 			'menu_name' => 'Videos',
-		);
+		];
 
-		$args = array(
+		$args = [
 			'labels' => $labels,
 			'public' => true,
 			'show_ui' => true,
@@ -43,11 +43,11 @@ class UAMSWP_Video_Directory_Post_Type_Video {
 			'menu_icon' => 'dashicons-video-alt3',
 			'hierarchical' => false,
 			'has_archive' => true,
-			'taxonomies' => array( 'video_categories' ),
-			'supports' => array( 'title', 'editor', 'custom-fields' ),
+			'taxonomies' => [ 'video_categories' ],
+			'supports' => [ 'title', 'editor', 'custom-fields' ],
 			'capability_type' => 'post',
 			'map_meta_cap' => true,
-		);
+		];
 
 		register_post_type( 'video', $args );
 	}

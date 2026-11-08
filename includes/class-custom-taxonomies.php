@@ -20,27 +20,27 @@ class UAMSWP_Video_Directory_Custom_Taxonomies {
 	 *
 	 * @since    1.0.0
 	 */
-	public function init() {
+	public function init(): void {
 
-		add_action( 'init', array( $this, 'init_taxonomies' ) );
+		add_action( 'init', [ $this, 'init_taxonomies' ] );
 
 	}
 
-	public function init_taxonomies() {
-		$taxonomies = array();
+	public function init_taxonomies(): void {
+		$taxonomies = [];
 
-		$taxonomies[] = array(
+		$taxonomies[] = [
 			'name' => 'video_categories',
 			'post_type' => 'video',
-			'labels' => array(
+			'labels' => [
 				'name'          => 'Video Categories',
 				'singular_name' => 'Video Category',
 				'edit_item'     => 'Edit Video Category',
 				'update_item'   => 'Update Video Category',
 				'add_new_item'  => 'Add New Video Category',
 				'menu_name'     => 'Video Categories',
-			),
-		);
+			],
+		];
 
 		// $taxonomies[] = array(
 		// 	'name' => 'idonate_colleges',
@@ -99,18 +99,18 @@ class UAMSWP_Video_Directory_Custom_Taxonomies {
 		}
 	}
 
-	private function register_custom_taxonomy( $name, $post_type, $labels ) {
-		$args = array(
+	private function register_custom_taxonomy( string $name, string $post_type, array $labels ): void {
+		$args = [
 			'hierarchical'      => true,
 			'labels'            => $labels,
 			'public'            => true,
 			'show_in_rest' => true,
 			'show_ui'           => true,
 			'show_admin_column' => true,
-			'capabilities' => array(
+			'capabilities' => [
 				'assign_terms' => 'edit_posts',
-			),
-		);
+			],
+		];
 
 		register_taxonomy( $name, $post_type, $args );
 	}

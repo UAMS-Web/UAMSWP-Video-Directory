@@ -17,13 +17,11 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // The core plugin class.
-require dirname( __FILE__ ) . '/includes/class-uamswp-video-directory.php';
+require __DIR__ . '/includes/class-uamswp-video-directory.php';
 add_action( 'after_setup_theme', 'UAMSWP_Video_Directory' );
 /**
  * Start things up.
- *
- * @return \UAMSWP_Video_Directory
  */
-function UAMSWP_Video_Directory() {
+function UAMSWP_Video_Directory(): \UAMSWP_Video_Directory {
 	return UAMSWP_Video_Directory::get_instance();
 }

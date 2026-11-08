@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRector;
 use Rector\Config\RectorConfig;
 use Rector\DeadCode\Rector\ClassMethod\RemoveDuplicatedReturnSelfDocblockRector;
+use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPrivateMethodRector;
 use Rector\DeadCode\Rector\Property\RemoveUselessVarTagRector;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
 use Rector\Php82\Rector\Class_\ReadOnlyClassRector;
@@ -109,7 +110,13 @@ $sweepOnlyRules = [
 //     RemovePhpVersionIdCheckRector::class => $guardFile,
 //     VersionCompareFuncCallToConstantRector::class => $guardFile,
 // ];
-$neverRules = [];
+// The three private `*_run()` methods of `UAMSWP_Video_Directory` are called as
+// `self::$instance->custom_posttypes_run()` from `setup_hooks()`, which Rector does not
+// read as a use of a private method. Applied, `RemoveUnusedPrivateMethodRector` deletes
+// all three, and the plugin then registers no post type, taxonomy or template.
+$neverRules = [
+    RemoveUnusedPrivateMethodRector::class => [__DIR__.'/includes/class-uamswp-video-directory.php'],
+];
 
 return RectorConfig::configure()
     ->withPaths([
