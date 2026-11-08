@@ -13,6 +13,10 @@
  * `uams_content_class()` stays undefined here, as in TemplatesTest, so the
  * fallback markup is what the main div carries.
  *
+ * One `UnwrapArrayValues` mutant is accepted as equivalent: `templates/archive-video.php` wraps the
+ * categories in `array_values()` and then loops over them, reading values only, so renumbering the
+ * keys changes no output.
+ *
  * @see templates/archive-video.php
  * @see templates/single-video.php
  */

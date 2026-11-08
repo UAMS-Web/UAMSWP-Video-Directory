@@ -20,6 +20,7 @@
     <source>
         <include>
             <directory suffix=".php">./includes</directory>
+            <directory suffix=".php">./templates</directory>
             <file>./uamswp-video-directory.php</file>
         </include>
     </source>

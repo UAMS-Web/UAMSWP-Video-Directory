@@ -32,6 +32,8 @@
                     the_excerpt();
                     $vid_cats = get_the_terms(get_the_ID(), 'video_categories');
                     if (! empty($vid_cats)) {
+                        // Equivalent mutant: `array_values()` only renumbers the keys, and the loop below reads values only.
+                        // @pest-mutate-ignore:UnwrapArrayValues
                         $categories = array_values($vid_cats);
                         $formatted_categories = '';
                         ?><p class=''><?php

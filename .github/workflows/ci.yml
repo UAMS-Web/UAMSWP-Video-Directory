@@ -47,8 +47,8 @@ jobs:
     with:
       linux-only: true
       # Turn mutation testing back on once coverage is complete (#50).
-      mutate: false
-      mutate-ignore-paths: includes
+      mutate: true
+      mutate-ignore-paths: includes templates
       # First-party PHP the `mutate` job selects changed files from: the plugin's classes, its
       # templates and the main plugin file. The chain's default, `src`, does not exist here.
       mutate-paths: includes templates uamswp-video-directory.php
