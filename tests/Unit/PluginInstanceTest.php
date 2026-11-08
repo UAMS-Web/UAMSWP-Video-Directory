@@ -37,7 +37,7 @@ it('wires the post type, taxonomy and template hooks on the first call, in that 
             'action:init:UAMSWP_Video_Directory_Post_Type_Video::custom_post_types',
             'action:init:UAMSWP_Video_Directory_Custom_Taxonomies::init_taxonomies',
             'filter:single_template:UAMSWP_Video_Directory_Custom_Templates::video_single',
-            'action:template_include:UAMSWP_Video_Directory_Custom_Templates::video_archive',
+            'filter:template_include:UAMSWP_Video_Directory_Custom_Templates::video_archive',
         ]);
 });
 
