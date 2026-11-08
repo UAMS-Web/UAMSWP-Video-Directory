@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /*
 Plugin Name: UAMSWP Video Directory
 Version: 1.0.0
@@ -12,16 +14,17 @@ Domain Path: /languages
 */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+if (! defined('WPINC')) {
+    exit;
 }
 
 // The core plugin class.
-require __DIR__ . '/includes/class-uamswp-video-directory.php';
-add_action( 'after_setup_theme', 'UAMSWP_Video_Directory' );
+require __DIR__.'/includes/class-uamswp-video-directory.php';
+add_action('after_setup_theme', 'UAMSWP_Video_Directory');
 /**
  * Start things up.
  */
-function UAMSWP_Video_Directory(): \UAMSWP_Video_Directory {
-	return UAMSWP_Video_Directory::get_instance();
+function UAMSWP_Video_Directory(): UAMSWP_Video_Directory
+{
+    return UAMSWP_Video_Directory::get_instance();
 }

@@ -10,11 +10,9 @@ declare(strict_types=1);
 
 use function Brain\Monkey\Actions\expectAdded;
 use function Brain\Monkey\Functions\expect;
-use Brain\Monkey\Actions;
-use Brain\Monkey\Functions;
 
 it('registers its taxonomies on the init action', function (): void {
-    $taxonomies = new UAMSWP_Video_Directory_Custom_Taxonomies();
+    $taxonomies = new UAMSWP_Video_Directory_Custom_Taxonomies;
 
     expectAdded('init')
         ->once()
@@ -31,5 +29,5 @@ it('registers the video categories taxonomy for the video post type', function (
                 && $args['labels']['name'] === 'Video Categories'
         ));
 
-    (new UAMSWP_Video_Directory_Custom_Taxonomies())->init_taxonomies();
+    (new UAMSWP_Video_Directory_Custom_Taxonomies)->init_taxonomies();
 });
