@@ -4,7 +4,9 @@
  * The video templates, rendered with WordPress mocked and no theme loaded.
  *
  * Neither the Unit bootstrap nor any test defines `uams_content_class()`, the
- * function the `uams-2016` theme provides, so these run the fallback branch.
+ * function the `uams-2016` theme provides, so these run the fallback branch. The last test
+ * defines it, which cannot be undone in a process, so it must stay the last test to run:
+ * `tests/Unit/TemplateOutputTest.php` asserts the function is absent, and runs before this file.
  *
  * @see templates/archive-video.php
  * @see templates/single-video.php
@@ -33,4 +35,23 @@ it('renders without the uams-2016 theme function', function (string $template): 
     $html = (string) ob_get_clean();
 
     expect($html)->toContain("<div class=\"uams-content col-md-12\" role='main'>");
+})->with('video templates');
+
+it('asks the uams-2016 theme for the content column class when the theme provides it', function (string $template): void {
+    foreach (['get_header', 'get_template_part', 'get_sidebar', 'get_footer', 'next_posts_link'] as $function) {
+        when($function)->justReturn();
+    }
+
+    when('have_posts')->justReturn(false);
+    when('uams_content_class')->alias(static function (): void {
+        echo 'class="theme-content"';
+    });
+
+    ob_start();
+    require __DIR__.'/../../templates/'.$template;
+    $html = (string) ob_get_clean();
+
+    expect($html)
+        ->toContain("<div class=\"theme-content\" role='main'>")
+        ->not->toContain('uams-content col-md-12');
 })->with('video templates');
