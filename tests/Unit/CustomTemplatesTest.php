@@ -8,6 +8,11 @@
  * a template for any other post type or archive is left alone, and the plugin's
  * file is returned only for a video with no theme template.
  *
+ * Three `EqualToIdentical` mutants are accepted as equivalent: `video_single()` compares a post
+ * type and `locate_template()`'s result to strings with `==`, and `video_archive()` does the same
+ * with `locate_template()`'s result. Both are always strings in WordPress, so no input separates
+ * `==` from `===`.
+ *
  * @see includes/class-custom-templates.php
  */
 

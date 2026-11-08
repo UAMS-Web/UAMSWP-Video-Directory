@@ -40,6 +40,9 @@ class UAMSWP_Video_Directory_Custom_Templates
     {
         global $post;
         $found = locate_template('single-video.php');
+        // Equivalent mutants: the post type and `locate_template()`'s result are always strings,
+        // so no input tells `==` from `===` apart.
+        // @pest-mutate-ignore:EqualToIdentical
         if ($post->post_type == 'video' && $found == '') {
             $single_template = plugin_dir_path(__DIR__).'templates/single-video.php';
         }
@@ -53,6 +56,8 @@ class UAMSWP_Video_Directory_Custom_Templates
         if (is_post_type_archive('video')) {
             $theme_files = ['archive-video.php'];
             $exists_in_theme = locate_template($theme_files, false);
+            // Equivalent mutant: `locate_template()` always returns a string, so no input tells `==` from `===` apart.
+            // @pest-mutate-ignore:EqualToIdentical
             if ($exists_in_theme == '') {
                 return plugin_dir_path(__DIR__).'templates/archive-video.php';
             }
