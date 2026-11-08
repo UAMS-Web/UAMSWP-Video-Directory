@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 /**
- * The core plugin class file
+ * The core plugin // scratch change to exercise the mutate job
+class file
  *
  * Defines the functions necessary to register our custom taxonomies with
  * WordPress.
