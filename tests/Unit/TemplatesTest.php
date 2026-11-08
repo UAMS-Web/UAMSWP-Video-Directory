@@ -34,3 +34,5 @@ it('renders without the uams-2016 theme function', function (string $template): 
 
     expect($html)->toContain("<div class=\"uams-content col-md-12\" role='main'>");
 })->with('video templates');
+
+// scratch: tests-only change for #33 evidence
