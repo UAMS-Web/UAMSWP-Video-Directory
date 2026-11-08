@@ -8,13 +8,13 @@
 
 declare(strict_types=1);
 
-use Brain\Monkey\Actions;
-use Brain\Monkey\Functions;
+use function Brain\Monkey\Actions\expectAdded;
+use function Brain\Monkey\Functions\expect;
 
 it('registers its taxonomies on the init action', function (): void {
-    $taxonomies = new UAMSWP_Video_Directory_Custom_Taxonomies();
+    $taxonomies = new UAMSWP_Video_Directory_Custom_Taxonomies;
 
-    Actions\expectAdded('init')
+    expectAdded('init')
         ->once()
         ->with([$taxonomies, 'init_taxonomies']);
 
@@ -22,12 +22,12 @@ it('registers its taxonomies on the init action', function (): void {
 });
 
 it('registers the video categories taxonomy for the video post type', function (): void {
-    Functions\expect('register_taxonomy')
+    expect('register_taxonomy')
         ->once()
         ->with('video_categories', 'video', Mockery::on(
             static fn (array $args): bool => $args['hierarchical'] === true
                 && $args['labels']['name'] === 'Video Categories'
         ));
 
-    (new UAMSWP_Video_Directory_Custom_Taxonomies())->init_taxonomies();
+    (new UAMSWP_Video_Directory_Custom_Taxonomies)->init_taxonomies();
 });

@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 
-<?php get_template_part( 'header', 'image' );  ?>
+<?php get_template_part('header', 'image'); ?>
 
 <div class="container uams-body">
 
@@ -8,13 +8,14 @@
 
     <div <?php if ( function_exists( 'uams_content_class' ) ) { uams_content_class(); } else { echo 'class="uams-content col-md-12"'; } ?> role='main'>
 
-      <?php get_template_part( 'breadcrumbs' ); ?>
+      <?php get_template_part('breadcrumbs'); ?>
 
       <div id='main_content' class="uams-body-copy" tabindex="-1">
 
             <?php
                 // Start the Loop.
-                while ( have_posts() ) : the_post();
+                while (have_posts()) {
+                    the_post();
 
                     ?>
                     <h2>
@@ -23,31 +24,30 @@
 
                     <?php
 
-                        the_post_thumbnail( array(130, 130), array( 'class' => 'attachment-post-thumbnail blogroll-img' ) );
-                        the_excerpt();
-                        $vid_cats = get_the_terms(get_the_ID(), 'video_categories');
-                        if (!empty($vid_cats)){
-                                $categories = array_values($vid_cats);
-                                $formatted_categories = "";
-                                ?><p class=''><?php
-                                foreach ($categories as $category) {
-                                    if (!empty($formatted_categories)) {
-                                        $formatted_categories = $formatted_categories . ", " . '<a href="' . $category->link . '">' . $category->name . '</a>';
-                                    }
-                                    else {
-                                        $formatted_categories = '<a href="' . $category->link . '">' . $category->name . '</a>';
-                                    }
-                                }
-                                echo $formatted_categories;
-                                ?></p><?php
+                        the_post_thumbnail([130, 130], ['class' => 'attachment-post-thumbnail blogroll-img']);
+                    the_excerpt();
+                    $vid_cats = get_the_terms(get_the_ID(), 'video_categories');
+                    if (! empty($vid_cats)) {
+                        $categories = array_values($vid_cats);
+                        $formatted_categories = '';
+                        ?><p class=''><?php
+                        foreach ($categories as $category) {
+                            if (! empty($formatted_categories)) {
+                                $formatted_categories = $formatted_categories.', '.'<a href="'.$category->link.'">'.$category->name.'</a>';
+                            } else {
+                                $formatted_categories = '<a href="'.$category->link.'">'.$category->name.'</a>';
                             }
+                        }
+                        echo $formatted_categories;
+                        ?></p><?php
+                    }
 
-                        echo "<hr>";
+                    echo '<hr>';
 
-                endwhile;
-            ?>
+                }
+?>
 
-            <span class="next-page"><?php next_posts_link( 'Next page', '' ); ?></span>
+            <span class="next-page"><?php next_posts_link('Next page', ''); ?></span>
 
       </div>
 
