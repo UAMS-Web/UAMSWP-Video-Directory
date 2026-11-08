@@ -15,6 +15,7 @@ declare(strict_types=1);
  */
 class UAMSWP_Video_Directory_Custom_Taxonomies
 {
+    // scratch edit for #33 evidence
     /**
      * Initializes the plugin by registering the hooks necessary
      * for creating our custom taxonomies within WordPress.
