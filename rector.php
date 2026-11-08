@@ -119,6 +119,7 @@ $neverRules = [
 return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/includes',
+        __DIR__.'/scripts',
         __DIR__.'/templates',
         __DIR__.'/tests',
     ])
