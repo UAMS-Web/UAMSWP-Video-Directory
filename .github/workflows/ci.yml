@@ -1,8 +1,8 @@
 name: CI
 
-# Runs the Pest unit suite, the PHP 8.2 floor lint, the download archive check and the
-# aggregate-needs check on every pull request and on pushes to master. The shared code-quality
-# chain (Pint, Rector, PHPStan and the rest) is a separate ticket and is not wired here.
+# Runs Pest, Pint, Rector, PHPStan, the PHP 8.2 floor lint, the download archive check and the
+# aggregate-needs check on every pull request and on pushes to master. The mutation jobs of the
+# shared code-quality chain are a separate ticket and are not wired here.
 #
 # The last job, `CI`, is the one check a ruleset requires from this workflow (with the two
 # pull-request-body checks, `Attribution footer` and `Closing keywords`). It `needs:` every other
@@ -56,6 +56,39 @@ jobs:
           echo "Linted $count file(s)"
           test "$count" -gt 0
 
+  # Formatting, with the `laravel` preset.
+  pint:
+    name: Pint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Pint
+        run: composer test:pint
+
+  # The gating Rector profile, previewed: fails when it would change a file.
+  rector:
+    name: Rector
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Rector
+        run: composer test:refactor
+
+  # Static analysis at the level in phpstan.neon.dist.
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: PHPStan
+        run: composer stan
+
   # Fails when a GitHub download of this repository would carry anything but what the plugin
   # runs: the synced agent folders, AGENTS.md, docs, tests, scripts, lock files or tool
   # configuration. It lists `git archive` of the checked-out commit with the keep-list in
@@ -87,7 +120,7 @@ jobs:
   # The one check a ruleset requires from this workflow. Keep `needs:` naming every other job.
   ci:
     name: CI
-    needs: [pest, lint-floor, download-archive, aggregate-needs]
+    needs: [pest, lint-floor, pint, rector, phpstan, download-archive, aggregate-needs]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
