@@ -1,14 +1,27 @@
 name: CI
 
-# Runs Pest, Pint, Rector, PHPStan, the PHP 8.2 floor lint, the download archive check and the
-# aggregate-needs check on every pull request and on pushes to master. The mutation jobs of the
-# shared code-quality chain are a separate ticket and are not wired here.
+# The checks this plugin runs on every pull request and on pushes to master.
+#
+# The lint and unit chain is the shared one, `UAMS-Web/uams-ci-workflows`, called by the
+# `checks` job. One definition serves every UAMS-Web repository, so this plugin does not
+# carry a copy that drifts. The call switches on the two jobs only a plugin runs
+# (`floor-lint`, `download-archive`), runs on Linux only, leaves mutation testing off, and
+# runs the plugin's unit suite as `composer test:unit`. `phpcs` stays off: this plugin has no
+# PHPCS configuration. The chain's own header lists every input and its default.
 #
 # The last job, `CI`, is the one check a ruleset requires from this workflow (with the two
-# pull-request-body checks, `Attribution footer` and `Closing keywords`). It `needs:` every other
-# job here, runs `if: always()`, and fails unless each reports `success`: a `skipped` or
-# `cancelled` job fails it. Do not rename `CI`. A job added to this file goes into the `needs:`
-# of `CI` in the same change; the `aggregate-needs` job fails when one is missing.
+# pull-request-body checks, `Attribution footer` and `Closing keywords`). It `needs:` the
+# call, runs `if: always()`, and fails unless the call reports `success`: a `skipped` or
+# `cancelled` call fails it. The call ends in a `Chain result` job that needs every job in
+# the chain, so `checks` is `success` only when each of them succeeded. Adding a plain job
+# here means adding it to the `needs:` list of `CI`; the `aggregate-needs` job in the chain
+# fails the pull request when one is missing. Do not rename `CI`, and do not rename `checks`
+# without changing `needs:` below.
+#
+# What the plugin carries for the call, because the called jobs check out this repository:
+# `.github/actions/setup/action.yml`, the synced `.claude/skills` scripts (including
+# `pest-testing`, which the chain's `mutate-ignore` and `pest` jobs run), the Composer scripts
+# `test:pint`, `test:refactor`, `stan` and `test:unit`, and `scripts/lint-floor.php`.
 
 on:
   pull_request:
@@ -16,6 +29,8 @@ on:
     branches: [master]
   workflow_dispatch:
 
+# A new push to a pull request cancels that pull request's stale run. Every other run gets a
+# group of its own, keyed on the commit, so a later push never cancels it.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -24,114 +39,36 @@ permissions:
   contents: read
 
 jobs:
-  pest:
-    name: Pest
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
-      - name: Pest
-        run: composer test
+  # The shared chain. Its checks report as `checks / <job name> (<operating system>)`.
+  checks:
+    # Pinned to the commit that published the plugin inputs (UAMS-Web/uams-ci-workflows#21). The newest
+    # tag, v0.8.0, predates it; move the pin to the next tag that carries it.
+    uses: UAMS-Web/uams-ci-workflows/.github/workflows/ci.yml@200584d8864e515a8f4801851fdf0cf6ae72e523
+    with:
+      linux-only: true
+      mutate: false
+      mutate-ignore-paths: includes
+      floor-lint: true
+      floor-lint-php: '8.2'
+      download-archive: true
+      download-archive-command: node .claude/skills/download-archive-check/check-download-archive.mjs
+      pest-command: composer test:unit
 
-  # The supported floor is PHP 8.2 while the suite runs on 8.4: parse every shipped PHP file on 8.2
-  # so syntax newer than the floor fails here. tests/, vendor/ and the synced agent folders are not shipped.
-  lint-floor:
-    name: Floor lint (PHP 8.2)
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          coverage: none
-      - name: Parse every shipped PHP file
-        run: |
-          count=0
-          while IFS= read -r file; do
-            php -l "$file"
-            count=$((count + 1))
-          done < <(git ls-files '*.php' ':!:tests/**' ':!:vendor/**' ':!:.claude/**' ':!:.agents/**' ':!:.cursor/**')
-          echo "Linted $count file(s)"
-          test "$count" -gt 0
-
-  # Formatting, with the `laravel` preset.
-  pint:
-    name: Pint
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
-      - name: Pint
-        run: composer test:pint
-
-  # The gating Rector profile, previewed: fails when it would change a file.
-  rector:
-    name: Rector
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
-      - name: Rector
-        run: composer test:refactor
-
-  # Static analysis at the level in phpstan.neon.dist.
-  phpstan:
-    name: PHPStan
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v7
-      - uses: ./.github/actions/setup
-      - name: PHPStan
-        run: composer stan
-
-  # Fails when a GitHub download of this repository would carry anything but what the plugin
-  # runs: the synced agent folders, AGENTS.md, docs, tests, scripts, lock files or tool
-  # configuration. It lists `git archive` of the checked-out commit with the keep-list in
-  # `.gitattributes` applied, so a new top-level folder the keep-list does not name fails the
-  # pull request that adds it. Reported here, not by a separate workflow, so `CI` waits on it.
-  download-archive:
-    name: Download archive
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7
-      - name: Check that the download holds only what the plugin runs
-        run: node .claude/skills/download-archive-check/check-download-archive.mjs
-
-  # Fails, naming the job, when a job in this file is missing from the `needs:` list of `CI`, or
-  # when one of the three fixed required names is reported by no pull request workflow.
-  aggregate-needs:
-    name: Aggregate needs
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '22'
-      - name: Check the aggregate covers every job
-        run: node .claude/skills/code-quality/scripts/check-aggregate-needs.mjs
-
-  # The one check a ruleset requires from this workflow. Keep `needs:` naming every other job.
+  # The one check a ruleset requires from this workflow. Keep `needs:` naming the call.
   ci:
     name: CI
-    needs: [pest, lint-floor, pint, rector, phpstan, download-archive, aggregate-needs]
+    needs: [checks]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      # `skipped` and `cancelled` fail as well as `failure`: a job that did not run proved nothing.
+      # `skipped` and `cancelled` fail as well as `failure`: a call that did not run proved nothing.
       - name: Every needed job succeeded
         env:
           RESULTS: ${{ join(needs.*.result, ' ') }}
         run: |
           echo "Needed job results: $RESULTS"
-          # An empty list (an emptied `needs:`, a dropped `env:`) would run no iterations and pass having read nothing.
+          # An empty list would run no iterations and pass having read nothing.
           if [ -z "$RESULTS" ]; then echo "::error::No needed job results to read"; exit 1; fi
           for result in $RESULTS; do
             if [ "$result" != "success" ]; then
