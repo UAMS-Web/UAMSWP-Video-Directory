@@ -51,7 +51,6 @@ it('asks the uams-2016 theme for the content column class when the theme provide
     require __DIR__.'/../../templates/'.$template;
     $html = (string) ob_get_clean();
 
-    expect($html)
-        ->toContain("<div class=\"theme-content\" role='main'>")
-        ->not->toContain('uams-content col-md-12');
+    expect($html)->toContain("<div class=\"theme-content\" role='main'>");
+    expect(str_contains($html, 'uams-content col-md-12'))->toBeFalse();
 })->with('video templates');
