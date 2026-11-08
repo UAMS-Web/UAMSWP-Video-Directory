@@ -108,7 +108,7 @@ class UAMSWP_Video_Directory_Custom_Taxonomies {
 			'show_ui'           => true,
 			'show_admin_column' => true,
 			'capabilities' => array(
-				'assign_terms' => 'edit_videos',
+				'assign_terms' => 'edit_posts',
 			),
 		);
 
