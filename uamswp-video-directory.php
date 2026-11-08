@@ -21,6 +21,8 @@ if (! defined('WPINC')) {
 // The core plugin class.
 require __DIR__.'/includes/class-uamswp-video-directory.php';
 add_action('after_setup_theme', 'UAMSWP_Video_Directory');
+register_activation_hook(__FILE__, ['UAMSWP_Video_Directory', 'activate']);
+register_deactivation_hook(__FILE__, ['UAMSWP_Video_Directory', 'deactivate']);
 /**
  * Start things up.
  */
