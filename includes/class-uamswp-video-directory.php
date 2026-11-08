@@ -21,6 +21,35 @@ class UAMSWP_Video_Directory {
 		return self::$instance;
 	}
 	/**
+	 * Registers the video post type and taxonomy, then flushes rewrite rules,
+	 * so video URLs resolve as soon as the plugin is active.
+	 *
+	 * Activation runs after `init` has fired, so the post type and taxonomy are
+	 * registered here by hand: the flush needs them in place.
+	 *
+	 * @since 1.0.1
+	 */
+	public static function activate() {
+		require_once( dirname( __FILE__ ) . '/class-custom-post-type-video.php' );
+		require_once( dirname( __FILE__ ) . '/class-custom-taxonomies.php' );
+		( new UAMSWP_Video_Directory_Post_Type_Video() )->custom_post_types();
+		( new UAMSWP_Video_Directory_Custom_Taxonomies() )->init_taxonomies();
+		flush_rewrite_rules();
+	}
+	/**
+	 * Removes the video rewrite rules.
+	 *
+	 * The post type and taxonomy are still registered while the plugin
+	 * deactivates, so they are unregistered before the flush.
+	 *
+	 * @since 1.0.1
+	 */
+	public static function deactivate() {
+		unregister_taxonomy( 'video_categories' );
+		unregister_post_type( 'video' );
+		flush_rewrite_rules();
+	}
+	/**
 	 * Setup hooks to include.
 	 *
 	 * @since 0.0.1
