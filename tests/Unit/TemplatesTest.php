@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-use Brain\Monkey\Functions;
+use function Brain\Monkey\Functions\when;
 
 dataset('video templates', [
     'archive' => ['archive-video.php'],
@@ -23,9 +23,10 @@ it('renders without the uams-2016 theme function', function (string $template): 
     expect(function_exists('uams_content_class'))->toBeFalse();
 
     foreach (['get_header', 'get_template_part', 'get_sidebar', 'get_footer', 'next_posts_link'] as $function) {
-        Functions\when($function)->justReturn(null);
+        when($function)->justReturn();
     }
-    Functions\when('have_posts')->justReturn(false);
+
+    when('have_posts')->justReturn(false);
 
     ob_start();
     require __DIR__.'/../../templates/'.$template;
