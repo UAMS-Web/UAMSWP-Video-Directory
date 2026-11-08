@@ -6,7 +6,7 @@ Requires PHP: 8.2
 Description: A plugin that is used to create video post type
 Author: uams, toddmckee
 Author URI: https://www.uams.edu/
-Plugin URI: https://github.com/washingtonstateuniversity/UAMSWP-Video-Directory
+Plugin URI: https://github.com/UAMS-Web/UAMSWP-Video-Directory
 Text Domain: uams-video-directory
 Domain Path: /languages
 */
@@ -19,6 +19,8 @@ if ( ! defined( 'WPINC' ) ) {
 // The core plugin class.
 require dirname( __FILE__ ) . '/includes/class-uamswp-video-directory.php';
 add_action( 'after_setup_theme', 'UAMSWP_Video_Directory' );
+register_activation_hook( __FILE__, array( 'UAMSWP_Video_Directory', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'UAMSWP_Video_Directory', 'deactivate' ) );
 /**
  * Start things up.
  *

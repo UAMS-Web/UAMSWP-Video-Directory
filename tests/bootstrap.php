@@ -26,5 +26,7 @@ if (! defined('ABSPATH')) {
  * hooks at file scope.
  */
 require_once __DIR__.'/../includes/class-custom-taxonomies.php';
+require_once __DIR__.'/../includes/class-custom-post-type-video.php';
+require_once __DIR__.'/../includes/class-uamswp-video-directory.php';
 
 // cspell:ignore ABSPATH
