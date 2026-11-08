@@ -62,9 +62,9 @@ class UAMSWP_Video_Directory
      */
     public function setup_hooks(): void
     {
-        self::$instance->custom_posttypes_run();
-        self::$instance->custom_taxonomies_run();
-        self::$instance->custom_templates_run();
+        $this->custom_posttypes_run();
+        $this->custom_taxonomies_run();
+        $this->custom_templates_run();
     }
 
     /**
