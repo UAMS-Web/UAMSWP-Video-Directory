@@ -102,6 +102,13 @@ class UAMSWP_Video_Directory_Custom_Taxonomies
         }
     }
 
+    /**
+     * Register one hierarchical taxonomy with the plugin's shared arguments.
+     *
+     * @param  string  $name  The taxonomy key.
+     * @param  string  $post_type  The post type the taxonomy is attached to.
+     * @param  array<string, string>  $labels  The taxonomy labels, keyed by label name.
+     */
     private function register_custom_taxonomy(string $name, string $post_type, array $labels): void
     {
         $args = [

@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 use Brain\Monkey\Functions;
 
-use function Brain\Monkey\Actions\expectAdded;
 use function Brain\Monkey\Filters\expectAdded as expectFilterAdded;
 use function Brain\Monkey\Functions\when;
 
@@ -47,7 +46,7 @@ it('registers its two template routes', function (): void {
     expectFilterAdded('single_template')
         ->once()
         ->with([$templates, 'video_single']);
-    expectAdded('template_include')
+    expectFilterAdded('template_include')
         ->once()
         ->with([$templates, 'video_archive']);
 

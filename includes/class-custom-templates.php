@@ -25,7 +25,7 @@ class UAMSWP_Video_Directory_Custom_Templates
     {
 
         add_filter('single_template', [$this, 'video_single']);
-        add_action('template_include', [$this, 'video_archive']);
+        add_filter('template_include', [$this, 'video_archive']);
 
         // add_action( 'init', array( $this, 'custom_post_types' ) );
         // $this->add_video_caps_to_admin();
@@ -35,6 +35,12 @@ class UAMSWP_Video_Directory_Custom_Templates
     // add_filter('single_template', array( $this, 'get_video_template' ));
     // add_action('template_include', array( $this, 'video_archive' ) );
 
+    /**
+     * Route the single template: the plugin's own for a video the theme has no template for.
+     *
+     * @param  string  $single_template  The template WordPress chose.
+     * @return string The template to load.
+     */
     // route single- template
     public function video_single($single_template)
     {
@@ -50,6 +56,12 @@ class UAMSWP_Video_Directory_Custom_Templates
         return $single_template;
     }
 
+    /**
+     * Route the archive template: the plugin's own for the video archive the theme has no template for.
+     *
+     * @param  string  $template  The template WordPress chose.
+     * @return string The template to load.
+     */
     // route archive- template
     public function video_archive($template)
     {
