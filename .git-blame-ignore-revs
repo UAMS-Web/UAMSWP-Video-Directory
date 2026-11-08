@@ -9,3 +9,5 @@
 #
 # Pint reformat: adopt the laravel preset
 6f0fcbfbd7440b2c064c15c297ea582bb9b37558
+# Pint reformat: squash commit of #15 (Rector, PHPStan and Pint adoption)
+a61ffa53713484ccac195b0dedf9689f40cfec15
