@@ -33,7 +33,7 @@ final class VideoLoopCursor
  * Renders a template through a mocked WordPress loop.
  *
  * @param  list<array{id: int, title: string, link: string, excerpt: string, content: string, terms: list<object>|false}>  $posts
- * @return array{html: string, calls: list<string>}
+ * @return array{html: string, raw: string, calls: list<string>}
  */
 function render_video_template(string $template, array $posts): array
 {
@@ -95,6 +95,9 @@ function render_video_template(string $template, array $posts): array
     $html = (string) ob_get_clean();
 
     return [
+        'raw' => str_replace('
+', '
+', $html),
         'html' => str_replace('> <', '><', trim((string) preg_replace('/\s+/', ' ', $html))),
         'calls' => $calls,
     ];
@@ -218,4 +221,15 @@ it('renders an empty single template: the frame and no heading', function (): vo
     $result = render_video_template('single-video.php', []);
 
     expect($result['html'])->toBe(VIDEO_TEMPLATE_HEAD.VIDEO_TEMPLATE_TAIL);
+});
+
+it('sends one newline after the footer call, because each template ends with two after the closing tag', function (): void {
+    foreach (['archive-video.php', 'single-video.php'] as $template) {
+        $result = render_video_template($template, []);
+
+        expect($result['raw'])->toEndWith('</div>
+
+
+');
+    }
 });
