@@ -33,7 +33,8 @@
         "test:refactor": "rector --dry-run",
         "test:refactor:sweep": "rector --dry-run --clear-cache --config=rector-sweep.php",
         "pint": "pint",
-        "test:pint": "pint --test"
+        "test:pint": "pint --test",
+        "lint:floor": "@php scripts/lint-floor.php"
     },
     "scripts-descriptions": {
         "test": "Run the test suite.",
@@ -44,6 +45,7 @@
         "test:refactor": "Preview the Rector gating profile; fails when it would change a file.",
         "test:refactor:sweep": "Preview the Rector sweep profile.",
         "pint": "Format the code with Pint.",
-        "test:pint": "Check the formatting with Pint without changing files."
+        "test:pint": "Check the formatting with Pint without changing files.",
+        "lint:floor": "Parse every shipped PHP file with the PHP named in LINT_PHP (default: php), the supported floor."
     }
 }
