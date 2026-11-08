@@ -6,7 +6,11 @@
 
   <div class="row">
 
-    <div <?php uams_content_class(); ?> role='main'>
+    <div <?php if (function_exists('uams_content_class')) {
+        uams_content_class();
+    } else {
+        echo 'class="uams-content col-md-12"';
+    } ?> role='main'>
 
       <?php get_template_part('breadcrumbs'); ?>
 
