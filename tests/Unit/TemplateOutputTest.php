@@ -86,7 +86,7 @@ function render_video_template(string $template, array $posts): array
 
         return $current()['terms'];
     });
-    when('next_posts_link')->alias(static function (string $label, string $max) use (&$calls): void {
+    when('next_posts_link')->alias(static function (string $label, int $max) use (&$calls): void {
         $calls[] = 'next_posts_link:'.$label.'|'.$max;
         echo '[next]';
     });
@@ -167,7 +167,7 @@ it('calls WordPress from the archive in this order, with these arguments', funct
         'the_post',
         'the_post_thumbnail:[[130,130],{"class":"attachment-post-thumbnail blogroll-img"}]',
         'get_the_terms:8,video_categories',
-        'next_posts_link:Next page|',
+        'next_posts_link:Next page|0',
         'get_sidebar',
         'get_footer',
     ]);
@@ -190,7 +190,7 @@ it('renders an empty archive: the frame, no video blocks, and the paging link', 
             'get_header',
             'get_template_part:header,image',
             'get_template_part:breadcrumbs',
-            'next_posts_link:Next page|',
+            'next_posts_link:Next page|0',
             'get_sidebar',
             'get_footer',
         ]);
@@ -214,7 +214,7 @@ it('calls WordPress from the single template in this order, with these arguments
         'get_template_part:header,image',
         'get_template_part:breadcrumbs',
         'the_post',
-        'next_posts_link:Next page|',
+        'next_posts_link:Next page|0',
         'get_sidebar',
         'get_footer',
     ]);
