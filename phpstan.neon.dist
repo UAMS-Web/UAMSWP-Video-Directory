@@ -62,6 +62,7 @@ parameters:
     # modifications.
     paths:
         - includes
+        - templates
         - uamswp-video-directory.php
         - tests
 

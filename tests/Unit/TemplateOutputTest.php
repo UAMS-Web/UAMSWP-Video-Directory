@@ -223,13 +223,10 @@ it('renders an empty single template: the frame and no heading', function (): vo
     expect($result['html'])->toBe(VIDEO_TEMPLATE_HEAD.VIDEO_TEMPLATE_TAIL);
 });
 
-it('sends one newline after the footer call, because each template ends with two after the closing tag', function (): void {
+it('sends nothing after the footer call, because each template ends with one newline after the closing tag', function (): void {
     foreach (['archive-video.php', 'single-video.php'] as $template) {
         $result = render_video_template($template, []);
 
-        expect($result['raw'])->toEndWith('</div>
-
-
-');
+        expect($result['raw'])->toEndWith('</div>'.str_repeat("\n", 2));
     }
 });

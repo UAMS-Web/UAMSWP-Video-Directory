@@ -53,8 +53,7 @@ $sweepOnlyRules = [
     ReadOnlyPropertyRector::class,
 
     // Unsound at this config's path scope. Rector only sees the directories in
-    // `withPaths()`, so it cannot see a static call from a template, a test, a
-    // hook registered as a `[Class::class, 'method']` callable, or another
+    // `withPaths()`, so it cannot see a hook registered as a `[Class::class, 'method']` callable, or another
     // package, and will happily demote a method that is still called statically
     // from outside those paths.
     LocallyCalledStaticMethodToNonStaticRector::class,
@@ -120,6 +119,7 @@ $neverRules = [
 return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/includes',
+        __DIR__.'/templates',
         __DIR__.'/tests',
     ])
     // The plugin header file at the repository root.
