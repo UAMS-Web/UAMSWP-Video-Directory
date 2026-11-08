@@ -35,7 +35,7 @@ final class VideoLoopCursor
 /**
  * Renders a template through a mocked WordPress loop.
  *
- * @param  list<array{id: int, title: string, link: string, excerpt: string, content: string, terms: list<object>|false}>  $posts
+ * @param  list<array{id: int|false, title: string, link: string, excerpt: string, content: string, terms: list<object>|object|false}>  $posts
  * @return array{html: string, raw: string, calls: list<string>}
  */
 function render_video_template(string $template, array $posts): array
@@ -80,8 +80,14 @@ function render_video_template(string $template, array $posts): array
     when('the_content')->alias(static function () use ($current): void {
         echo $current()['content'];
     });
-    when('get_the_ID')->alias(static fn (): int => $current()['id']);
-    when('get_the_terms')->alias(static function (int $id, string $taxonomy) use ($current, &$calls): array|false {
+    when('get_the_ID')->alias(static fn (): int|false => $current()['id']);
+    when('get_term_link')->alias(static function (stdClass $term) use (&$calls): string|object {
+        $calls[] = 'get_term_link:'.$term->name;
+
+        // An object stands for the `WP_Error` `get_term_link()` returns for a term with no archive.
+        return $term->url ?? new stdClass;
+    });
+    when('get_the_terms')->alias(static function (int $id, string $taxonomy) use ($current, &$calls): array|object|false {
         $calls[] = 'get_the_terms:'.$id.','.$taxonomy;
 
         return $current()['terms'];
@@ -107,10 +113,10 @@ function render_video_template(string $template, array $posts): array
 }
 
 /**
- * @param  list<object>|false  $terms
- * @return array{id: int, title: string, link: string, excerpt: string, content: string, terms: list<object>|false}
+ * @param  list<object>|object|false  $terms  An object stands for the `WP_Error` `get_the_terms()` can return.
+ * @return array{id: int|false, title: string, link: string, excerpt: string, content: string, terms: list<object>|object|false}
  */
-function video_post(int $id, string $title, array|false $terms): array
+function video_post(int|false $id, string $title, array|object|false $terms): array
 {
     return [
         'id' => $id,
@@ -122,9 +128,11 @@ function video_post(int $id, string $title, array|false $terms): array
     ];
 }
 
-function video_term(string $name): object
+function video_term(string $name, bool $linked = true): object
 {
-    return (object) ['name' => $name, 'link' => 'https://example.test/category/'.strtolower($name).'/'];
+    return $linked
+        ? (object) ['name' => $name, 'url' => 'https://example.test/category/'.strtolower($name).'/']
+        : (object) ['name' => $name];
 }
 
 const VIDEO_TEMPLATE_HEAD = '<div class="container uams-body"><div class="row"><div class="uams-content col-md-12" role=\'main\'>'
@@ -164,6 +172,7 @@ it('calls WordPress from the archive in this order, with these arguments', funct
         'the_post',
         'the_post_thumbnail:[[130,130],{"class":"attachment-post-thumbnail blogroll-img"}]',
         'get_the_terms:7,video_categories',
+        'get_term_link:News',
         'the_post',
         'the_post_thumbnail:[[130,130],{"class":"attachment-post-thumbnail blogroll-img"}]',
         'get_the_terms:8,video_categories',
@@ -173,13 +182,29 @@ it('calls WordPress from the archive in this order, with these arguments', funct
     ]);
 });
 
+it('shows the name alone for a category that has no archive to link to', function (): void {
+    $result = render_video_template('archive-video.php', [
+        video_post(7, 'Alpha', [video_term('News'), video_term('Health', false), video_term('Care', false)]),
+    ]);
+
+    expect($result['html'])->toContain(
+        "<p class=''><a href=\"https://example.test/category/news/\">News</a>, Health, Care</p>"
+    );
+});
+
 it('omits the category paragraph for an archive video with no categories', function (): void {
-    foreach ([false, []] as $terms) {
+    foreach ([false, [], new stdClass] as $terms) {
         $result = render_video_template('archive-video.php', [video_post(7, 'Alpha', $terms)]);
 
         expect($result['html'])->toContain('[thumbnail]Alpha excerpt<hr>');
         expect($result['html'])->not->toContain('<p class=');
     }
+});
+
+it('asks for the terms of post 0 when WordPress has no current post id', function (): void {
+    $result = render_video_template('archive-video.php', [video_post(false, 'Alpha', [video_term('News')])]);
+
+    expect($result['calls'])->toContain('get_the_terms:0,video_categories');
 });
 
 it('renders an empty archive: the frame, no video blocks, and the paging link', function (): void {

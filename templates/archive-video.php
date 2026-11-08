@@ -30,18 +30,21 @@
 
                         the_post_thumbnail([130, 130], ['class' => 'attachment-post-thumbnail blogroll-img']);
                     the_excerpt();
-                    $vid_cats = get_the_terms(get_the_ID(), 'video_categories');
-                    if (! empty($vid_cats)) {
+                    $vid_cats = get_the_terms((int) get_the_ID(), 'video_categories');
+                    if (is_array($vid_cats) && $vid_cats !== []) {
                         // Equivalent mutant: `array_values()` only renumbers the keys, and the loop below reads values only.
                         // @pest-mutate-ignore:UnwrapArrayValues
                         $categories = array_values($vid_cats);
                         $formatted_categories = '';
                         ?><p class=''><?php
                         foreach ($categories as $category) {
+                            // `get_term_link()` returns a `WP_Error` when it has no archive to link to: show the name alone.
+                            $term_link = get_term_link($category);
+                            $category_html = is_string($term_link) ? '<a href="'.$term_link.'">'.$category->name.'</a>' : $category->name;
                             if (! empty($formatted_categories)) {
-                                $formatted_categories = $formatted_categories.', '.'<a href="'.$category->link.'">'.$category->name.'</a>';
+                                $formatted_categories = $formatted_categories.', '.$category_html;
                             } else {
-                                $formatted_categories = '<a href="'.$category->link.'">'.$category->name.'</a>';
+                                $formatted_categories = $category_html;
                             }
                         }
                         echo $formatted_categories;
