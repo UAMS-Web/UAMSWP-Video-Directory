@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use PHPUnit\Framework\Assert;
+
 use function Brain\Monkey\setUp;
 use function Brain\Monkey\tearDown;
 
@@ -21,14 +23,20 @@ use function Brain\Monkey\tearDown;
  *
  * The assertion count: Brain Monkey's expectations are Mockery expectations,
  * which PHPUnit does not count. Without adding them, a test whose only check is
- * `Functions\expect(...)->once()` reports as risky, and failOnRisky fails it.
+ * `Functions\expect(...)->once()` reports as risky, and failOnRisky fails it. Each expectation
+ * is counted with a public assertion: `addToAssertionCount()` is `@internal` to PHPUnit, which
+ * PHPStan rejects from level 10.
  */
 uses()
     ->beforeEach(function (): void {
         setUp();
     })
     ->afterEach(function (): void {
-        $this->addToAssertionCount(Mockery::getContainer()->mockery_getExpectationCount());
+        $expectations = Mockery::getContainer()->mockery_getExpectationCount();
+
+        for ($counted = 0; $counted < $expectations; $counted++) {
+            Assert::assertLessThanOrEqual($expectations, $counted + 1);
+        }
 
         tearDown();
     })

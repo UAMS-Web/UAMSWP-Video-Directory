@@ -82,10 +82,14 @@ function render_video_template(string $template, array $posts): array
     });
     when('get_the_ID')->alias(static fn (): int|false => $current()['id']);
     when('get_term_link')->alias(static function (stdClass $term) use (&$calls): string|object {
-        $calls[] = 'get_term_link:'.$term->name;
+        $name = $term->name;
+        assert(is_string($name));
+        $calls[] = 'get_term_link:'.$name;
 
         // An object stands for the `WP_Error` `get_term_link()` returns for a term with no archive.
-        return $term->url ?? new stdClass;
+        $url = $term->url ?? null;
+
+        return is_string($url) ? $url : new stdClass;
     });
     when('get_the_terms')->alias(static function (int|false $id, string $taxonomy) use ($current, &$calls): array|object|false {
         // `var_export()` keeps the type: an int is `0`, a `false` the template failed to cast is `false`.
