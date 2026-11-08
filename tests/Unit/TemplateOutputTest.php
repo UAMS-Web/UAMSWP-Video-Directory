@@ -10,6 +10,9 @@
  * else (tags, attributes, text, order, and the arguments passed to WordPress)
  * is exact.
  *
+ * One `UnwrapArrayValues` mutant is accepted as equivalent and annotated in `templates/archive-video.php`:
+ * the category loop reads values only, so renumbering the keys with `array_values()` changes nothing.
+ *
  * `uams_content_class()` stays undefined here, as in TemplatesTest, so the
  * fallback markup is what the main div carries.
  *
