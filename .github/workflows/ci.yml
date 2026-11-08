@@ -41,12 +41,13 @@ permissions:
 jobs:
   # The shared chain. Its checks report as `checks / <job name> (<operating system>)`.
   checks:
-    # Pinned to the commit that published the plugin inputs (UAMS-Web/uams-ci-workflows#21). The newest
-    # tag, v0.8.0, predates it; move the pin to the next tag that carries it.
-    uses: UAMS-Web/uams-ci-workflows/.github/workflows/ci.yml@200584d8864e515a8f4801851fdf0cf6ae72e523
+    # Pinned to a release tag, never a branch or a commit, so a change to the chain reaches this plugin
+    # only when the pin moves. v0.9.0 carries the plugin inputs (UAMS-Web/uams-ci-workflows#21).
+    uses: UAMS-Web/uams-ci-workflows/.github/workflows/ci.yml@v0.9.0
     with:
       linux-only: true
       mutate: false
+      # Unused while `mutate` is false: since v0.9.0 that also skips the `mutate-ignore` job.
       mutate-ignore-paths: includes
       floor-lint: true
       floor-lint-php: '8.2'
