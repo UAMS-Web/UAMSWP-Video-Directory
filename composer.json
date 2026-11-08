@@ -28,7 +28,7 @@
         "test": "@test:unit",
         "test:unit": "pest",
         "stan": "phpstan analyse --no-progress --memory-limit=2G",
-        "mutate": "pest tests/Unit/ActivationTest.php tests/Unit/CustomTaxonomiesTest.php tests/Unit/PluginHeaderTest.php tests/Unit/TemplateOutputTest.php tests/Unit/TemplatesTest.php --mutate --covered-only --path=includes,templates,uamswp-video-directory.php",
+        "mutate": "pest tests/Unit/ActivationTest.php tests/Unit/CustomPostTypeVideoTest.php tests/Unit/CustomTaxonomiesTest.php tests/Unit/PluginHeaderTest.php tests/Unit/TemplateOutputTest.php tests/Unit/TemplatesTest.php --mutate --covered-only --path=includes,templates,uamswp-video-directory.php",
         "refactor": "rector",
         "refactor:sweep": "rector --clear-cache --config=rector-sweep.php",
         "test:refactor": "rector --dry-run",
