@@ -3,7 +3,7 @@
 declare(strict_types=1);
 /*
 Plugin Name: UAMSWP Video Directory
-Version: 1.1.0
+Version: 1.1.1
 Requires PHP: 8.2
 Description: A plugin that is used to create video post type
 Author: uams, toddmckee
