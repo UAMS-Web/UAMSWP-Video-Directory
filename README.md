@@ -43,3 +43,11 @@ The floor lint parses every shipped PHP file with the supported floor. To run it
 LINT_PHP=/path/to/php8.2 composer lint:floor
 ```
 
+## Credits
+
+Developed and maintained by UAMS Web Services.
+
+Developers:
+
+- Josh Daugherty
+- Todd McKee

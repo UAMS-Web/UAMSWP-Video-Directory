@@ -6,8 +6,8 @@ Plugin Name: UAMSWP Video Directory
 Version: 1.1.2
 Requires PHP: 8.2
 Description: A plugin that is used to create video post type
-Author: uams, toddmckee
-Author URI: https://www.uams.edu/
+Author: UAMS Web Services
+Author URI: https://communications.uams.edu/web/
 Plugin URI: https://github.com/UAMS-Web/UAMSWP-Video-Directory
 Text Domain: uams-video-directory
 Domain Path: /languages
