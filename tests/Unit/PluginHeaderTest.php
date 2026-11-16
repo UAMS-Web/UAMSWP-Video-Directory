@@ -29,3 +29,7 @@ function plugin_header_field(string $field): ?string
 it('links the plugin site to the UAMS-Web repository', function (): void {
     expect(plugin_header_field('Plugin URI'))->toBe('https://github.com/UAMS-Web/UAMSWP-Video-Directory');
 });
+
+it('declares WordPress 6.8 as the minimum version', function (): void {
+    expect(plugin_header_field('Requires at least'))->toBe('6.8');
+});
