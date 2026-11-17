@@ -4,6 +4,7 @@ declare(strict_types=1);
 /*
 Plugin Name: UAMSWP Video Directory
 Version: 1.1.2
+Requires at least: 6.8
 Requires PHP: 8.2
 Description: A plugin that is used to create video post type
 Author: UAMS Web Services
