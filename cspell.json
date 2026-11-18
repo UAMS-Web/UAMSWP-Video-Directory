@@ -1,0 +1,19 @@
+// The spell check for this repository's prose (#84). Run: cspell --no-progress README.md "docs/**/*.md"
+// Every word below is a name that cannot be reworded (american-english-prose, category 1).
+{
+  "version": "0.2",
+  "language": "en-US",
+  "words": [
+    // The organization and the plugin
+    "UAMS",
+    "UAMSWP",
+    // The uams-2016 theme and the uams_content_class() function it provides
+    "uams",
+    // A WordPress icon set: the post type's menu_icon value
+    "dashicons",
+    // Pint's preset name
+    "laravel",
+    // The tool, as its config file names it: phpstan.neon.dist
+    "phpstan"
+  ]
+}
