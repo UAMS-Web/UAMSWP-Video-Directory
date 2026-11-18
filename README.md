@@ -2,9 +2,22 @@
 
 A WordPress plugin that adds a video post type and its taxonomy.
 
-## Theme
+The [wiki](https://github.com/UAMS-Web/UAMSWP-Video-Directory/wiki) has the documentation: a walkthrough, using your own templates in a theme, the post type, taxonomy and template reference, and troubleshooting. Its pages are kept in [`docs/wiki/`](docs/wiki/) and published from there.
 
-The video templates in `templates/` are written for the [`uams-2016`](https://github.com/UAMS-Web/uams-2016/) theme. They use its `header-image` and `breadcrumbs` template parts and its `uams_content_class()` function. Under any other theme the templates still render: a missing `uams_content_class()` falls back to the classes `uams-content col-md-12`, and a missing template part outputs nothing.
+## Requirements
+
+- WordPress 6.8 or later
+- PHP 8.2 or later
+
+The templates are written for the [`uams-2016`](https://github.com/UAMS-Web/uams-2016/) theme and still render under any other; the wiki's [Templates](https://github.com/UAMS-Web/UAMSWP-Video-Directory/wiki/Templates) page says what changes.
+
+## Installation
+
+1. Download the source code zip of the latest [release](https://github.com/UAMS-Web/UAMSWP-Video-Directory/releases) and unzip it.
+2. Rename the folder it holds (`UAMSWP-Video-Directory-<version>`) to `UAMSWP-Video-Directory` and put it in the site's `wp-content/plugins/`. A deploy tool that installs from the repository does both steps itself.
+3. Activate **UAMSWP Video Directory** under *Plugins*.
+
+A **Videos** menu appears in the admin. The wiki's [Adding your first video](https://github.com/UAMS-Web/UAMSWP-Video-Directory/wiki/Adding-your-first-video) goes on from there.
 
 ## Running the tests
 
